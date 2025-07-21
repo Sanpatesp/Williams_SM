@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>{{ product.name }}</h1>
+    <div class="product-detail">
+        <img src="{{ product.image_url or url_for('static', filename='images/default_product.png') }}" alt="{{ product.name }}">
+        <p>{{ product.description }}</p>
+        <p><strong>Price:</strong> ${{ "%.2f"|format(product.price) }}</p>
+        <p><strong>Stock:</strong> {{ product.stock }}</p>
+
+        {% if product.stock > 0 %}
+            <form method="POST" action="">
+                {{ form.hidden_tag() }}
+                <p>
+                    {{ form.quantity.label }}<br>
+                    {{ form.quantity(min=1, value=1) }}<br>
+                    {% for error in form.quantity.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </p>
+                <p>{{ form.submit(value='Add to Cart') }}</p>
+            </form>
+        {% else %}
+            <p class="out-of-stock">¡Agotado!</p>
+        {% endif %}
+    </div>
+{% endblock %}

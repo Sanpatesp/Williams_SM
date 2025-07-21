@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Williams - {{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="{{ url_for('index') }}" class="logo"> Supermercado Williams </a>
+            <ul>
+                <li><a href="{{ url_for('products') }}">Productos</a></li>
+                {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('cart') }}">Carrito</a></li>
+                    <li><a href="{{ url_for('orders') }}">Mis Pedidos</a></li>
+                    {% if current_user.is_admin %}
+                        <li><a href="{{ url_for('admin_dashboard') }}">Admin</a></li>
+                    {% endif %}
+                    <li><a href="{{ url_for('logout') }}">Cerrar Sesión</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}">Iniciar Sesión</a></li>
+                    <li><a href="{{ url_for('register') }}">Registrarse</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flashes">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Supermercado Williams. Todos los derechos reservados.</p>
+    </footer>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

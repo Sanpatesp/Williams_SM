@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Mis Pedidos</h1>
+    {% if orders %}
+        <ul class="order-list">
+            {% for order in orders %}
+                <li>
+                    Pedido #{{ order.id }} - Fecha: {{ order.order_date.strftime('%Y-%m-%d %H:%M') }} - Total: ${{ "%.2f"|format(order.total_amount) }} - Estado: {{ order.status }}
+                    <a href="{{ url_for('order_detail', order_id=order.id) }}" class="button small">Ver Detalles</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No has realizado ningún pedido aún.</p>
+        <a href="{{ url_for('products') }}" class="button">Explorar Productos</a>
+    {% endif %}
+{% endblock %}

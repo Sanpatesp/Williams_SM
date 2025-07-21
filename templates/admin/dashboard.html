@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Panel de Administración</h1>
+
+    <section>
+        <h2>Gestión de Productos</h2>
+        <a href="{{ url_for('manage_product') }}" class="button primary">Añadir Nuevo Producto</a>
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                    <tr>
+                        <td>{{ product.id }}</td>
+                        <td>{{ product.name }}</td>
+                        <td>${{ "%.2f"|format(product.price) }}</td>
+                        <td>{{ product.stock }}</td>
+                        <td>
+                            <a href="{{ url_for('manage_product', product_id=product.id) }}" class="button small">Editar</a>
+                            <a href="{{ url_for('delete_product', product_id=product.id) }}" class="button small danger" onclick="return confirm('¿Estás seguro de que quieres eliminar este producto?');">Eliminar</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <section>
+        <h2>Gestión de Usuarios</h2>
+        {# Aquí podrías agregar una tabla de usuarios y opciones de edición/eliminación #}
+        <p>Funcionalidad de gestión de usuarios en desarrollo.</p>
+    </section>
+
+    <section>
+        <h2>Gestión de Pedidos</h2>
+        {# Aquí podrías agregar una tabla de pedidos y opciones de gestión #}
+        <p>Funcionalidad de gestión de pedidos en desarrollo.</p>
+    </section>
+
+{% endblock %}
