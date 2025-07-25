@@ -1,16 +1,33 @@
 {% extends "base.html" %}
 {% block content %}
     <h1>Nuestros Productos</h1>
+    <!-- Filtro por sección -->
+    <form method="get" action="">
+        <label for="secction">Filtrar por sección:</label>
+        <select name="secction" id="secction" onchange="this.form.submit()">
+            <option value="">Todas</option>
+            {% for sec in ['Res', 'Pollo', 'Embutidos', 'Cerdo', 'Verduras', 'Frutas', 'Abarrotes'] %}
+                <option value="{{ sec }}" {% if request.args.get('secction') == sec %}selected{% endif %}>{{ sec }}</option>
+            {% endfor %}
+        </select>
+    </form>
     <div class="product-list">
         {% for product in products %}
+            {% if not request.args.get('secction') or product.secction == request.args.get('secction') %}
             <div class="product-card">
-                <img src="{{ product.image_url or url_for('static', filename='images/default_product.png') }}" alt="{{ product.name }}">
+                {% if product.image_url %}
+                    <img src="{{ url_for('static', filename='imgs/' + product.image_url) }}" alt="{{ product.name }}">
+                {% else %}
+                    <img src="{{ url_for('static', filename='images/default_product.png') }}" alt="{{ product.name }}">
+                {% endif %}
                 <h3><a href="{{ url_for('product_detail', product_id=product.id) }}">{{ product.name }}</a></h3>
+                <p><strong>Sección:</strong> {{ product.secction }}</p>
                 <p>{{ product.description[:100] }}...</p>
                 <p>${{ "%.2f"|format(product.price) }}</p>
                 <p>Stock: {{ product.stock }}</p>
                 <a href="{{ url_for('product_detail', product_id=product.id) }}" class="button">Ver Detalles</a>
             </div>
+            {% endif %}
         {% endfor %}
     </div>
 {% endblock %}

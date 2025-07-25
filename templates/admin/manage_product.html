@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
     <h1>{% if product %}Editar Producto{% else %}Añadir Nuevo Producto{% endif %}</h1>
-    <form action="" method="post">
+    <form action="" method="post" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
         <p>
             {{ form.name.label }}<br>
@@ -32,9 +32,19 @@
             {% endfor %}
         </p>
         <p>
-            {{ form.image_url.label }}<br>
-            {{ form.image_url(size=128) }}<br>
-            {% for error in form.image_url.errors %}
+            {{ form.secction.label }}<br>
+            {{ form.secction() }}<br>
+            {% for error in form.secction.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.image.label }}<br>
+            {{ form.image() }}<br>
+            {% if product and product.image_url %}
+                <img src="{{ url_for('static', filename='imgs/' + product.image_url) }}" alt="Imagen actual" style="max-width:100px;">
+            {% endif %}
+            {% for error in form.image.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>

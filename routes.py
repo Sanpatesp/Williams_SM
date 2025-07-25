@@ -54,11 +54,16 @@ def logout():
 @app.route('/index')
 def index():
     products = Product.query.limit(8).all() # Muestra algunos productos en la página principal
-    return render_template('index.html', title='Home', products=products)
+    form = AddToCartForm()
+    return render_template('index.html', title='Home', products=products, form=form)
 
 @app.route('/products')
 def products():
-    products = Product.query.all()
+    secction = request.args.get('secction')
+    if secction:
+        products = Product.query.filter_by(secction=secction).all()
+    else:
+        products = Product.query.all()
     return render_template('products.html', title='Products', products=products)
 
 @app.route('/product/<int:product_id>', methods=['GET', 'POST'])
@@ -161,7 +166,7 @@ def checkout():
 @app.route('/orders')
 @login_required
 def orders():
-    orders = current_user.orders.order_by(Order.order_date.desc()).all()
+    orders = Order.query.filter_by(user_id=current_user.id).order_by(Order.order_date.desc()).all()
     return render_template('orders.html', title='My Orders', orders=orders)
 
 @app.route('/order/<int:order_id>')
@@ -201,17 +206,27 @@ def manage_product(product_id=None):
     else:
         form = ProductForm()
 
+    import os
+    from werkzeug.utils import secure_filename
     if form.validate_on_submit():
+        filename = None
+        if form.image.data:
+            filename = secure_filename(form.image.data.filename)
+            img_path = os.path.join(app.root_path, 'static', 'imgs', filename)
+            form.image.data.save(img_path)
         if product:
             form.populate_obj(product)
+            if filename:
+                product.image_url = filename
             flash('Product updated successfully!', 'success')
         else:
             new_product = Product(
+                secction=form.secction.data,
                 name=form.name.data,
                 description=form.description.data,
                 price=form.price.data,
                 stock=form.stock.data,
-                image_url=form.image_url.data
+                image_url=filename if filename else None
             )
             db.session.add(new_product)
             flash('Product added successfully!', 'success')
@@ -222,7 +237,6 @@ def manage_product(product_id=None):
         form.description.data = product.description
         form.price.data = product.price
         form.stock.data = product.stock
-        form.image_url.data = product.image_url
 
     return render_template('admin/manage_product.html', title='Manage Product', form=form, product=product)
 

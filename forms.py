@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, TextAreaField, FloatField, IntegerField
+from wtforms import StringField, PasswordField, SubmitField, TextAreaField, FloatField, IntegerField, SelectField
+from flask_wtf.file import FileField, FileAllowed
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, Length
 from models import User, Product
 
@@ -27,11 +28,20 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 class ProductForm(FlaskForm):
+    secction = SelectField('Sección', choices=[
+        ('Res', 'Res'),
+        ('Pollo', 'Pollo'),
+        ('Embutidos', 'Embutidos'),
+        ('Cerdo', 'Cerdo'),
+        ('Verduras', 'Verduras'),
+        ('Frutas', 'Frutas'),
+        ('Abarrotes', 'Abarrotes')
+    ], validators=[DataRequired()])
     name = StringField('Product Name', validators=[DataRequired(), Length(min=2, max=128)])
     description = TextAreaField('Description')
     price = FloatField('Price', validators=[DataRequired()])
     stock = IntegerField('Stock', validators=[DataRequired()])
-    image_url = StringField('Image URL')
+    image = FileField('Imagen', validators=[FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Solo imágenes.')])
     submit = SubmitField('Add/Update Product')
 
 class AddToCartForm(FlaskForm):

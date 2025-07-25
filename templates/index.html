@@ -2,7 +2,12 @@
 
 {% block content %}
     <h1>Bienvenido {{ current_user.username }}!</h1>
-    <p>Supermercado Williams, tu supermercado virtual favorito.</p>
+    <div style="margin-bottom: 10px;">
+        <img src="{{ url_for('static', filename='imgs/Logo.jpeg') }}" alt="Logo Supermercado Williams" style="height: 120px; border-radius: 8px; display: block;">
+    </div>
+    <div>
+        <p>Supermercado Williams, tu supermercado virtual favorito.</p>
+    </div>
 
     <h2>Productos Destacados</h2>
     <div class="product-list">
@@ -13,7 +18,7 @@
                 <p>${{ "%.2f"|format(product.price) }}</p>
                 <p>Stock: {{ product.stock }}</p>
                 <form action="{{ url_for('product_detail', product_id=product.id) }}" method="post">
-                    {{ product_detail_form.hidden_tag() }} {# Agrega esto si decides usar el formulario de AddToCartForm aquí #}
+                    {{ form.hidden_tag() }} {# Agrega esto si decides usar el formulario de AddToCartForm aquí #}
                     <input type="hidden" name="quantity" value="1">
                     <button type="submit">Agregar al Carrito</button>
                 </form>
