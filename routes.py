@@ -2,6 +2,7 @@ from flask import render_template, flash, redirect, url_for, request
 from app import app, db
 from models import User, Product, CartItem, Order, OrderItem
 from forms import RegistrationForm, LoginForm, ProductForm, AddToCartForm
+from admin_forms import DummyCSRFForm
 from flask_login import current_user, login_user, logout_user, login_required, LoginManager # Necesitarás instalar Flask-Login
 from sqlalchemy import func
 
@@ -53,7 +54,7 @@ def logout():
 @app.route('/')
 @app.route('/index')
 def index():
-    products = Product.query.limit(8).all() # Muestra algunos productos en la página principal
+    products = Product.query.all()  # Muestra todos los productos en la página principal
     form = AddToCartForm()
     return render_template('index.html', title='Home', products=products, form=form)
 
@@ -163,11 +164,39 @@ def checkout():
     flash('Your order has been placed successfully!', 'success')
     return redirect(url_for('orders'))
 
+
+# Vista de pedidos para usuarios normales
 @app.route('/orders')
 @login_required
 def orders():
+    if current_user.is_admin:
+        return redirect(url_for('admin_orders'))
     orders = Order.query.filter_by(user_id=current_user.id).order_by(Order.order_date.desc()).all()
     return render_template('orders.html', title='My Orders', orders=orders)
+
+# Vista de pedidos para administradores
+@app.route('/admin/orders')
+@login_required
+def admin_orders():
+    if not current_user.is_admin:
+        flash('Acceso denegado. Debes ser administrador.', 'danger')
+        return redirect(url_for('index'))
+    orders = Order.query.order_by(Order.order_date.desc()).all()
+    csrf_form = DummyCSRFForm()
+    return render_template('admin/orders.html', title='Pedidos de Usuarios', orders=orders, csrf_form=csrf_form)
+
+# Completar pedido (admin)
+@app.route('/admin/order/<int:order_id>/complete', methods=['POST'])
+@login_required
+def complete_order(order_id):
+    if not current_user.is_admin:
+        flash('Acceso denegado. Debes ser administrador.', 'danger')
+        return redirect(url_for('index'))
+    order = Order.query.get_or_404(order_id)
+    order.status = 'Completed'
+    db.session.commit()
+    flash(f'Pedido #{order.id} marcado como completado.', 'success')
+    return redirect(url_for('admin_orders'))
 
 @app.route('/order/<int:order_id>')
 @login_required
