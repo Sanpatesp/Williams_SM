@@ -64,9 +64,10 @@ class Order(db.Model):
     order_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     total_amount = db.Column(db.Float, nullable=False)
     status = db.Column(db.String(64), default='Pending')  # e.g., Pending, Shipped, Delivered
+    payment_method = db.Column(db.String(32), nullable=True)  # Nuevo campo
 
     user = db.relationship('User', backref='orders')
-    items = db.relationship('OrderItem', backref='order')  # Eliminado lazy='dynamic'
+    items = db.relationship('OrderItem', backref='order')
 
     def __repr__(self):
         return f'<Order {self.id} User:{self.user_id}>'

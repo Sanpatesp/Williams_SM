@@ -47,3 +47,4 @@ class ProductForm(FlaskForm):
 class AddToCartForm(FlaskForm):
     quantity = IntegerField('Quantity', validators=[DataRequired()])
     submit = SubmitField('Add to Cart')
+

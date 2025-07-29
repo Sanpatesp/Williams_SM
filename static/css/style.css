@@ -36,6 +36,79 @@ nav ul {
     display: flex;
 }
 
+/* Responsive navbar */
+.nav-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.hamburger {
+    width: 30px;
+    height: 3px;
+    background: white;
+    display: block;
+    position: relative;
+}
+.hamburger::before,
+.hamburger::after {
+    content: '';
+    position: absolute;
+    width: 30px;
+    height: 3px;
+    background: white;
+    left: 0;
+    transition: 0.3s;
+}
+.hamburger::before {
+    top: -10px;
+}
+.hamburger::after {
+    top: 10px;
+}
+
+@media (max-width: 768px) {
+    nav {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+    }
+    .logo {
+        flex: 1;
+        text-align: left;
+        font-size: 1.3rem;
+        padding-right: 10px;
+    }
+    .nav-toggle {
+        display: block;
+        order: 2;
+    }
+    nav ul {
+        flex-direction: column;
+        width: 100%;
+        display: none;
+        background: #130041;
+        position: absolute;
+        top: 55px;
+        left: 0;
+        z-index: 1000;
+        margin-top: 0;
+    }
+    nav ul.open {
+        display: flex;
+    }
+    nav ul li {
+        margin: 15px 0;
+        text-align: left;
+    }
+    .nav-toggle, .logo {
+        z-index: 1100;
+    }
+}
+
 nav ul li {
     margin-left: 20px;
 }

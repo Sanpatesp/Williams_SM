@@ -1,0 +1,17 @@
+
+{% extends "base.html" %}
+{% block content %}
+    <h1>Confirmar Compra</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div>
+            <label>{{ form.payment_method.label }}</label><br>
+            {% for subfield in form.payment_method %}
+                <label>{{ subfield() }} {{ subfield.label.text }}</label><br>
+            {% endfor %}
+        </div>
+        <button type="submit" class="button primary">{{ form.submit.label.text }}</button>
+    </form>
+    <a href="{{ url_for('cart') }}" class="button">Volver al carrito</a>
+{% endblock %}
+

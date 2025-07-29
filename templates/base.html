@@ -10,6 +10,9 @@
     <header>
         <nav>
             <a href="{{ url_for('index') }}" class="logo"> Supermercado Williams </a>
+            <button class="nav-toggle" aria-label="Abrir menú" onclick="document.querySelector('nav ul').classList.toggle('open')">
+                <span class="hamburger"></span>
+            </button>
             <ul>
                 <li><a href="{{ url_for('products') }}">Productos</a></li>
                 {% if current_user.is_authenticated %}
@@ -33,6 +36,10 @@
                 <div class="flashes">
                     {% for category, message in messages %}
                         <div class="alert alert-{{ category }}">{{ message }}</div>
+            <button class="nav-toggle" aria-label="Abrir menú" onclick="document.querySelector('nav ul').classList.toggle('open')">
+                <span class="hamburger"></span>
+            </button>
+            <a href="{{ url_for('index') }}" class="logo"> Supermercado Williams </a>
                     {% endfor %}
                 </div>
             {% endif %}

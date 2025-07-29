@@ -1,7 +1,7 @@
 {% extends 'admin/dashboard.html' %}
 {% block content %}
 <h1>Pedidos de Usuarios</h1>
-<table>
+<table class="admin-table">
     <thead>
         <tr>
             <th>ID Pedido</th>
@@ -19,12 +19,12 @@
             <td>{{ order.user.username }}</td>
             <td>{{ order.order_date.strftime('%Y-%m-%d %H:%M') }}</td>
             <td>${{ '%.2f'|format(order.total_amount) }}</td>
-            <td>{{ 'Completado' if order.status == 'Completed' else 'Pendiente' }}</td>
+            <td>{{ 'Completado' if order.status == 'Completed' else 'Pagado' }}</td>
             <td>
                 {% if order.status != 'Completed' %}
                 <form action="{{ url_for('complete_order', order_id=order.id) }}" method="post" style="display:inline;">
                     {{ csrf_form.csrf_token }}
-                    <button type="submit">Completar</button>
+                    <button type="submit">Despachar</button>
                 </form>
                 {% else %}
                 ---

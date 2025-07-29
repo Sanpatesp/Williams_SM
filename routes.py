@@ -121,48 +121,51 @@ def remove_from_cart(item_id):
     return redirect(url_for('cart'))
 
 # --- Rutas de Checkout/Pedido ---
-@app.route('/checkout')
+
+
+
+from payment_form import PaymentForm
+
+@app.route('/checkout', methods=['GET', 'POST'])
 @login_required
 def checkout():
-    cart_items = current_user.cart_items  # <-- CORRECTO, sin .all()
+    cart_items = current_user.cart_items
     if not cart_items:
         flash('Your cart is empty!', 'warning')
         return redirect(url_for('products'))
 
+    form = PaymentForm()
     total_amount = sum(item.product.price * item.quantity for item in cart_items)
 
-    # Crear una nueva orden
-    order = Order(user_id=current_user.id, total_amount=total_amount)
-    db.session.add(order)
-    db.session.commit() # Necesitamos el ID de la orden para los OrderItems
+    if form.validate_on_submit():
+        payment_method = form.payment_method.data
+        # Crear una nueva orden con método de pago
+        order = Order(user_id=current_user.id, total_amount=total_amount)
+        # Guardar el método de pago en la orden (agregar campo si no existe)
+        order.payment_method = payment_method
+        db.session.add(order)
+        db.session.commit()
 
-    # Mover items del carrito a OrderItems y actualizar stock
-    for item in cart_items:
-        # Verificar stock antes de finalizar la compra (puede haber cambiado)
-        product = Product.query.get(item.product_id)
-        if product.stock < item.quantity:
-            flash(f'Not enough stock for {product.name}. Only {product.stock} available. Please adjust your cart.', 'danger')
-            # Rollback la orden si hay problemas de stock
-            db.session.rollback()
-            return redirect(url_for('cart'))
-
-        order_item = OrderItem(
-            order_id=order.id,
-            product_id=item.product_id,
-            quantity=item.quantity,
-            price=item.product.price
-        )
-        db.session.add(order_item)
-        # Reducir el stock del producto
-        product.stock -= item.quantity
-
-    # Vaciar el carrito después de la compra exitosa
-    for item in cart_items:
-        db.session.delete(item)
-
-    db.session.commit()
-    flash('Your order has been placed successfully!', 'success')
-    return redirect(url_for('orders'))
+        for item in cart_items:
+            product = Product.query.get(item.product_id)
+            if product.stock < item.quantity:
+                flash(f'Not enough stock for {product.name}. Only {product.stock} available. Please adjust your cart.', 'danger')
+                db.session.rollback()
+                return redirect(url_for('cart'))
+            order_item = OrderItem(
+                order_id=order.id,
+                product_id=item.product_id,
+                quantity=item.quantity,
+                price=item.product.price
+            )
+            db.session.add(order_item)
+            product.stock -= item.quantity
+        for item in cart_items:
+            db.session.delete(item)
+        db.session.commit()
+        flash('¡Tu pedido ha sido realizado exitosamente!', 'success')
+        return redirect(url_for('orders'))
+    return render_template('checkout.html', title='Confirmar Compra', form=form)
 
 
 # Vista de pedidos para usuarios normales
@@ -206,7 +209,6 @@ def order_detail(order_id):
         flash('You are not authorized to view this order.', 'danger')
         return redirect(url_for('orders'))
     return render_template('order_detail.html', title=f'Order #{order.id}', order=order)
-
 
 # --- Rutas de Administración (requieren ser admin) ---
 @app.route('/admin')

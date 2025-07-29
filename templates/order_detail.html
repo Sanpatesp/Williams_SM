@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
     <h1>Detalles del Pedido #{{ order.id }}</h1>
+
     <p><strong>Fecha del Pedido:</strong> {{ order.order_date.strftime('%Y-%m-%d %H:%M') }}</p>
     <p><strong>Estado:</strong> {{ order.status }}</p>
     <p><strong>Total:</strong> ${{ "%.2f"|format(order.total_amount) }}</p>
