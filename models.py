@@ -1,4 +1,15 @@
 from app import db
+
+class Promotion(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False, unique=True)
+    discount = db.Column(db.Float, nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    price_discounted = db.Column(db.Float, nullable=False)
+    product = db.relationship('Product', backref='promotion')
+
+    def __repr__(self):
+        return f'<Promotion Product:{self.product_id} Discount:{self.discount}%>'
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 

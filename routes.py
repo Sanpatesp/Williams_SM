@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, url_for, request
 from app import app, db
-from models import User, Product, CartItem, Order, OrderItem
+from models import User, Product, CartItem, Order, OrderItem, Promotion
 from forms import RegistrationForm, LoginForm, ProductForm, AddToCartForm
 from admin_forms import DummyCSRFForm
 from flask_login import current_user, login_user, logout_user, login_required, LoginManager # Necesitarás instalar Flask-Login
@@ -54,9 +54,27 @@ def logout():
 @app.route('/')
 @app.route('/index')
 def index():
-    products = Product.query.all()  # Muestra todos los productos en la página principal
+    from models import Promotion, Product
+    promociones = Promotion.query.all()
+    if promociones:
+        productos = []
+        for promo in promociones:
+            producto = Product.query.get(promo.product_id)
+            if producto:
+                productos.append({
+                    'id': producto.id,
+                    'nombre': producto.name,
+                    'precio': promo.price,
+                    'precio_descuento': promo.price_discounted,
+                    'descuento': promo.discount,
+                    'imagen': producto.image_url
+                })
+        mostrar_promos = True
+    else:
+        productos = Product.query.all()
+        mostrar_promos = False
     form = AddToCartForm()
-    return render_template('index.html', title='Home', products=products, form=form)
+    return render_template('index.html', title='Home', productos=productos, form=form, mostrar_promos=mostrar_promos)
 
 @app.route('/products')
 def products():
@@ -282,3 +300,54 @@ def delete_product(product_id):
     db.session.commit()
     flash('Product deleted successfully!', 'info')
     return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/promocion', methods=['GET', 'POST'])
+@login_required
+def admin_promocion():
+    if not current_user.is_admin:
+        flash('Acceso denegado. Debes ser administrador.', 'danger')
+        return redirect(url_for('index'))
+
+    productos = Product.query.all()
+    productos_js = [{'id': p.id, 'nombre': p.name, 'precio': p.price} for p in productos]
+    promociones = []
+    if request.method == 'POST':
+        productos_ids = request.form.getlist('producto[]')
+        descuentos = request.form.getlist('descuento[]')
+        precios = request.form.getlist('precio[]')
+        precios_descuento = request.form.getlist('precio_descuento[]')
+        promociones = []
+        # Eliminar promociones anteriores
+        Promotion.query.delete()
+        db.session.commit()
+        for i in range(len(productos_ids)):
+            if productos_ids[i]:
+                promo = Promotion(
+                    product_id=int(productos_ids[i]),
+                    discount=float(descuentos[i]),
+                    price=float(precios[i]),
+                    price_discounted=float(precios_descuento[i])
+                )
+                db.session.add(promo)
+                promociones.append({
+                    'producto_id': int(productos_ids[i]),
+                    'nombre': next((p.name for p in productos if p.id == int(productos_ids[i])), ''),
+                    'descuento': float(descuentos[i]),
+                    'precio': float(precios[i]),
+                    'precio_descuento': float(precios_descuento[i])
+                })
+        db.session.commit()
+        flash('Promociones actualizadas correctamente.', 'success')
+    else:
+        # Mostrar promociones actuales
+        promociones_db = Promotion.query.all()
+        for promo in promociones_db:
+            nombre = next((p.name for p in productos if p.id == promo.product_id), '')
+            promociones.append({
+                'producto_id': promo.product_id,
+                'nombre': nombre,
+                'descuento': promo.discount,
+                'precio': promo.price,
+                'precio_descuento': promo.price_discounted
+            })
+    return render_template('admin/promocion.html', productos=productos, promociones=promociones, productos_js=productos_js)

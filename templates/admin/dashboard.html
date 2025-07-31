@@ -5,6 +5,8 @@
     <section>
         <h2>Gestión de Productos</h2>
         <a href="{{ url_for('manage_product') }}" class="button primary">Añadir Nuevo Producto</a>
+        <a href="{{ url_for('admin_promocion') }}" class="button primary" style="margin-left:10px;">Gestionar Promociones</a>
+        <a href="{{ url_for('admin_orders') }}" class="button primary">Ver Pedidos de Usuarios</a>
         <table class="admin-table">
             <thead>
                 <tr>
@@ -36,12 +38,6 @@
         <h2>Gestión de Usuarios</h2>
         {# Aquí podrías agregar una tabla de usuarios y opciones de edición/eliminación #}
         <p>Funcionalidad de gestión de usuarios en desarrollo.</p>
-    </section>
-
-
-    <section>
-        <h2>Gestión de Pedidos</h2>
-        <a href="{{ url_for('admin_orders') }}" class="button primary">Ver Pedidos de Usuarios</a>
     </section>
 
 {% endblock %}
