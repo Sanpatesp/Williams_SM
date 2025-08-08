@@ -6,7 +6,7 @@
             <thead>
                 <tr>
                     <th>Producto</th>
-                    <th>Cantidad</th>
+                    <th>Un</th>
                     <th>Precio Unitario</th>
                     <th>Subtotal</th>
                     <th>Acción</th>
@@ -30,8 +30,9 @@
                 </tr>
             </tfoot>
         </table>
-        <div class="cart-actions">
-            <a href="{{ url_for('checkout') }}" class="button primary">Proceder al Pago</a>
+        <div class="cart-actions" style="display: flex; gap: 10px;">
+            <a href="{{ url_for('products') }}" class="button small">Agregar más productos</a>
+            <a href="{{ url_for('checkout') }}" class="button primary small">Proceder al Pago</a>
         </div>
     {% else %}
         <p>Tu carrito está vacío. ¡Empieza a comprar!</p>

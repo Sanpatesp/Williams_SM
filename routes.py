@@ -67,7 +67,8 @@ def index():
                     'precio': promo.price,
                     'precio_descuento': promo.price_discounted,
                     'descuento': promo.discount,
-                    'imagen': producto.image_url
+                    'imagen': producto.image_url,
+                    'seccion': getattr(producto, 'secction', None)
                 })
         mostrar_promos = True
     else:

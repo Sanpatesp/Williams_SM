@@ -21,7 +21,7 @@
                     <img src="{{ url_for('static', filename='images/default_product.png') }}" alt="{{ product.name }}">
                 {% endif %}
                 <h3><a href="{{ url_for('product_detail', product_id=product.id) }}">{{ product.name }}</a></h3>
-                <p><strong>Sección:</strong> {{ product.secction }}</p>
+                {# <p><strong>Sección:</strong> {{ product.secction }}</p> #}
                 <p>{{ product.description[:100] }}...</p>
                 <p>${{ "%.2f"|format(product.price) }}</p>
                 <p>Stock: {{ product.stock }}</p>

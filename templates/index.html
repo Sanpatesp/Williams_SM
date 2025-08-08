@@ -1,29 +1,42 @@
+
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Bienvenido {{ current_user.username }}!</h1>
-    <div style="margin-bottom: 10px;">
-        <img src="{{ url_for('static', filename='imgs/Logo.jpeg') }}" alt="Logo Supermercado Williams" style="height: 120px; border-radius: 8px; display: block;">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    <h1 style="text-align: center;">Bienvenido {{ current_user.username }}!</h1>
+    <div style="margin-bottom: 10px; text-align: center;">
+        <img src="{{ url_for('static', filename='imgs/Logo.jpeg') }}" alt="Logo Supermercado Williams" style="height: 240px; border-radius: 8px; display: inline-block;">
     </div>
-    <div>
-        <p>Supermercado Williams, tu supermercado virtual favorito.</p>
+    <div style="text-align: center;">
+        <p class="bienvenida-super">Supermercado Williams, tu supermercado virtual favorito.</p>
     </div>
 
     {% if mostrar_promos %}
-    <h2>Promociones</h2>
+    <h2 style="text-align: center;">Promociones</h2>
     <div class="product-list">
         {% for product in productos %}
             <div class="product-card">
-                {% if product.imagen %}
-                    <img src="{{ url_for('static', filename='imgs/' + product.imagen) }}" alt="{{ product.nombre }}">
+                {% if product.seccion %}
+                    <div style="position: relative;">
+                        <div class="promo-label">{{ product.seccion }}</div>
+                        {% if product.imagen %}
+                            <img src="{{ url_for('static', filename='imgs/' + product.imagen) }}" alt="{{ product.nombre }}">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='images/default_product.png') }}" alt="{{ product.nombre }}">
+                        {% endif %}
+                    </div>
                 {% else %}
-                    <img src="{{ url_for('static', filename='images/default_product.png') }}" alt="{{ product.nombre }}">
+                    {% if product.imagen %}
+                        <img src="{{ url_for('static', filename='imgs/' + product.imagen) }}" alt="{{ product.nombre }}">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='images/default_product.png') }}" alt="{{ product.nombre }}">
+                    {% endif %}
                 {% endif %}
                 <h3>{{ product.nombre }}</h3>
                 <p>
-                    <span style="text-decoration: line-through; color: #888;">${{ '%.2f'|format(product.precio) }}</span>
-                    <span style="color: #d32f2f; font-weight: bold;">${{ '%.2f'|format(product.precio_descuento) }}</span>
-                    <span style="color: #388e3c;">-{{ product.descuento|int }}%</span>
+                    <span class="old-price">${{ '%.2f'|format(product.precio) }}</span>
+                    <span class="discount-price">${{ '%.2f'|format(product.precio_descuento) }}</span>
+                    <span class="discount-label">-{{ product.descuento|int }}%</span>
                 </p>
                 <form action="{{ url_for('product_detail', product_id=product.id) }}" method="post">
                     {{ form.hidden_tag() }}
@@ -34,7 +47,7 @@
         {% endfor %}
     </div>
     {% else %}
-    <h2>Productos Destacados</h2>
+    <h2 style="text-align: center;">Productos Destacados</h2>
     <div class="product-list">
         {% for product in productos %}
             <div class="product-card">
