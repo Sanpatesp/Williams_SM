@@ -24,7 +24,7 @@
                 {# <p><strong>Sección:</strong> {{ product.secction }}</p> #}
                 <p>{{ product.description[:100] }}...</p>
                 <p>${{ "%.2f"|format(product.price) }}</p>
-                <p>Stock: {{ product.stock }}</p>
+                <p>Stock: <span style="color: {% if product.stock < 10 %}red{% else %}inherit{% endif %}; font-weight: bold;">{{ product.stock }}</span></p>
                 <a href="{{ url_for('product_detail', product_id=product.id) }}" class="button">Ver Detalles</a>
             </div>
             {% endif %}

@@ -27,6 +27,9 @@
         <p>
             {{ form.stock.label }}<br>
             {{ form.stock(size=10) }}<br>
+            {% if product %}
+                <span>Stock actual: <span style="color: {% if product.stock < 10 %}red{% else %}inherit{% endif %}; font-weight: bold;">{{ product.stock }}</span></span><br>
+            {% endif %}
             {% for error in form.stock.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
