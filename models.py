@@ -1,4 +1,6 @@
 from app import db
+from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 
 class Promotion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -10,8 +12,6 @@ class Promotion(db.Model):
 
     def __repr__(self):
         return f'<Promotion Product:{self.product_id} Discount:{self.discount}%>'
-from datetime import datetime
-from werkzeug.security import generate_password_hash, check_password_hash
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
