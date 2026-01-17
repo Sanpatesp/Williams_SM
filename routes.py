@@ -241,6 +241,104 @@ def admin_dashboard():
     orders = Order.query.all()
     return render_template('admin/dashboard.html', title='Admin Dashboard', users=users, products=products, orders=orders)
 
+# --- Rutas de Gestión de Usuarios ---
+@app.route('/admin/users')
+@login_required
+def manage_users():
+    if not current_user.is_admin:
+        flash('Acceso denegado. Debes ser administrador.', 'danger')
+        return redirect(url_for('index'))
+    users = User.query.all()
+    return render_template('admin/manage_user.html', title='Gestión de Usuarios', users=users)
+
+@app.route('/admin/user/new', methods=['GET', 'POST'])
+@login_required
+def create_user():
+    if not current_user.is_admin:
+        flash('Acceso denegado. Debes ser administrador.', 'danger')
+        return redirect(url_for('index'))
+    
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        # Verificar si el usuario ya existe
+        if User.query.filter_by(username=form.username.data).first():
+            flash('El nombre de usuario ya está en uso.', 'danger')
+            return redirect(url_for('create_user'))
+        if User.query.filter_by(email=form.email.data).first():
+            flash('El correo electrónico ya está registrado.', 'danger')
+            return redirect(url_for('create_user'))
+        
+        user = User(username=form.username.data, email=form.email.data)
+        user.set_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('Cuenta de usuario creada exitosamente.', 'success')
+        return redirect(url_for('manage_users'))
+    
+    return render_template('admin/create_user.html', title='Crear Usuario', form=form)
+
+@app.route('/admin/user/edit/<int:user_id>', methods=['GET', 'POST'])
+@login_required
+def edit_user(user_id):
+    if not current_user.is_admin:
+        flash('Acceso denegado. Debes ser administrador.', 'danger')
+        return redirect(url_for('index'))
+    
+    user = User.query.get_or_404(user_id)
+    
+    if request.method == 'POST':
+        # Verificar si el nuevo username/email ya existen
+        if request.form.get('username') != user.username:
+            if User.query.filter_by(username=request.form.get('username')).first():
+                flash('El nombre de usuario ya está en uso.', 'danger')
+                return redirect(url_for('edit_user', user_id=user_id))
+        
+        if request.form.get('email') != user.email:
+            if User.query.filter_by(email=request.form.get('email')).first():
+                flash('El correo electrónico ya está registrado.', 'danger')
+                return redirect(url_for('edit_user', user_id=user_id))
+        
+        user.username = request.form.get('username')
+        user.email = request.form.get('email')
+        user.phone = request.form.get('phone', user.phone)
+        user.address = request.form.get('address', user.address)
+        
+        # Cambiar contraseña si se proporciona
+        if request.form.get('password'):
+            user.set_password(request.form.get('password'))
+        
+        # Cambiar estado de admin si se proporciona
+        if 'is_admin' in request.form:
+            user.is_admin = True
+        else:
+            user.is_admin = False
+        
+        db.session.commit()
+        flash('Información del usuario actualizada exitosamente.', 'success')
+        return redirect(url_for('manage_users'))
+    
+    return render_template('admin/edit_user.html', title='Editar Usuario', user=user)
+
+@app.route('/admin/user/delete/<int:user_id>', methods=['POST'])
+@login_required
+def delete_user(user_id):
+    if not current_user.is_admin:
+        flash('Acceso denegado. Debes ser administrador.', 'danger')
+        return redirect(url_for('index'))
+    
+    user = User.query.get_or_404(user_id)
+    
+    # Evitar que se elimine a sí mismo
+    if user.id == current_user.id:
+        flash('No puedes eliminar tu propia cuenta.', 'danger')
+        return redirect(url_for('manage_users'))
+    
+    username = user.username
+    db.session.delete(user)
+    db.session.commit()
+    flash(f'La cuenta de usuario "{username}" ha sido eliminada.', 'success')
+    return redirect(url_for('manage_users'))
+
 @app.route('/admin/product/new', methods=['GET', 'POST'])
 @app.route('/admin/product/edit/<int:product_id>', methods=['GET', 'POST'])
 @login_required

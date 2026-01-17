@@ -7,6 +7,7 @@
         <a href="{{ url_for('manage_product') }}" class="button primary">Añadir Nuevo Producto</a>
         <a href="{{ url_for('admin_promocion') }}" class="button primary" style="margin-left:10px;">Gestionar Promociones</a>
         <a href="{{ url_for('admin_orders') }}" class="button primary">Ver Pedidos de Usuarios</a>
+        <a href="{{ url_for('manage_users') }}" class="button primary" style="margin-left:10px;">Gestionar Usuarios</a>
         <table class="admin-table">
             <thead>
                 <tr>
@@ -32,12 +33,6 @@
                 {% endfor %}
             </tbody>
         </table>
-    </section>
-
-    <section>
-        <h2>Gestión de Usuarios</h2>
-        {# Aquí podrías agregar una tabla de usuarios y opciones de edición/eliminación #}
-        <p>Funcionalidad de gestión de usuarios en desarrollo.</p>
     </section>
 
 {% endblock %}
