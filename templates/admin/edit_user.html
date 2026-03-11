@@ -9,66 +9,48 @@
             <form method="POST" action="{{ url_for('edit_user', user_id=user.id) }}" novalidate>
                 <div class="card">
                     <div class="card-body">
-                        <!-- Información Básica -->
-                        <h5 class="card-title">Información Básica</h5>
-
                         <div class="form-group">
                             <label for="username">Nombre de Usuario</label>
                             <input type="text" class="form-control" id="username" name="username" 
                                    value="{{ user.username }}" required>
                         </div>
-
+                        <br>
                         <div class="form-group">
                             <label for="email">Correo Electrónico</label>
                             <input type="email" class="form-control" id="email" name="email" 
                                    value="{{ user.email }}" required>
                         </div>
-
-                        <!-- Información de Contacto -->
-                        <hr>
-                        <h5 class="card-title">Información de Contacto</h5>
-
+                        <br>
                         <div class="form-group">
                             <label for="phone">Teléfono</label>
                             <input type="tel" class="form-control" id="phone" name="phone" 
                                    value="{{ user.phone if user.phone else '' }}">
                         </div>
-
+                        <br>
                         <div class="form-group">
                             <label for="address">Dirección</label>
                             <textarea class="form-control" id="address" name="address" rows="3">{{ user.address if user.address else '' }}</textarea>
                         </div>
-
-                        <!-- Seguridad -->
-                        <hr>
-                        <h5 class="card-title">Seguridad</h5>
-
+                        <br>
                         <div class="form-group">
                             <label for="password">Nueva Contraseña (dejar en blanco para no cambiar)</label>
                             <input type="password" class="form-control" id="password" name="password">
-                            <small class="form-text text-muted">Si dejas este campo vacío, la contraseña actual se mantendrá.</small>
                         </div>
-
-                        <!-- Permisos -->
-                        <hr>
-                        <h5 class="card-title">Permisos</h5>
-
+                        <br>
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" id="is_admin" name="is_admin" 
                                    {% if user.is_admin %}checked{% endif %}>
                             <label class="form-check-label" for="is_admin">
                                 Administrador
                             </label>
-                            <small class="form-text text-muted d-block mt-1">Marcar esta casilla otorgará permisos de administrador a este usuario.</small>
+                            <small class="form-text text-muted d-block mt-1">(Marcar esta casilla otorgará permisos de administrador a este usuario.)</small>
                         </div>
 
-                        <!-- Botones -->
-                        <hr>
                         <div class="form-group">
-                            <button type="submit" class="btn btn-primary btn-lg">
+                            <button type="submit" class="button primary" style="margin-right: 5px;">
                                 <i class="fas fa-save"></i> Guardar Cambios
                             </button>
-                            <a href="{{ url_for('manage_users') }}" class="btn btn-secondary btn-lg">
+                            <a href="{{ url_for('manage_users') }}" class="button danger">
                                 <i class="fas fa-times"></i> Cancelar
                             </a>
                         </div>

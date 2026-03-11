@@ -14,6 +14,8 @@
                 <span class="hamburger"></span>
             </button>
             <ul>
+                <li><a href="{{ url_for('q_and_a') }}">Preguntas frecuentes</a></li>
+                <li><a href="{{ url_for('about_us') }}">Quienes somos</a></li>
                 <li><a href="{{ url_for('products') }}">Productos</a></li>
                 {% if current_user.is_authenticated %}
                     <li><a href="{{ url_for('cart') }}">Carrito</a></li>

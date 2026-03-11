@@ -77,6 +77,14 @@ def index():
     form = AddToCartForm()
     return render_template('index.html', title='Home', productos=productos, form=form, mostrar_promos=mostrar_promos)
 
+@app.route('/about')
+def about_us():
+    return render_template('about_us.html', title='About Us')
+
+@app.route('/Q&A')
+def q_and_a():
+    return render_template('q_and_a.html', title='Q&A')
+
 @app.route('/products')
 def products():
     secction = request.args.get('secction')

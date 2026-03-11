@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    .faq-wrap{display:flex;gap:1rem;align-items:flex-start;}
+    .faq-list{width:35%;min-width:200px;}
+    .faq-detail{flex:1;border-left:1px solid #e0e0e0;padding-left:1rem;min-height:150px;}
+    .faq-btn{
+        display:block;width:100%;text-align:left;padding:.6rem .8rem;margin:.35rem 0;border:1px solid #ccc;border-radius:6px;
+        background:#fff;cursor:pointer;
+    }
+    .faq-btn.active{background:#0078d4;color:#fff;border-color:#0078d4}
+    .answer{display:none;}
+    .answer.active{display:block;}
+    @media (max-width:700px){
+        .faq-wrap{flex-direction:column;}
+        .faq-list{width:100%;}
+        .faq-detail{border-left:0;padding-left:0;}
+    }
+</style>
+
+<h1>Preguntas frecuentes</h1>
+
+<div class="faq-wrap" role="region" aria-label="Preguntas frecuentes">
+    <div class="faq-list" role="tablist" aria-orientation="vertical">
+        {# Espera una variable de contexto 'faqs' como lista de diccionarios {question, answer} #}
+        {% for faq in faqs %}
+            <button type="button"
+                            class="faq-btn"
+                            data-target="answer-{{ loop.index0 }}"
+                            aria-controls="answer-{{ loop.index0 }}"
+                            aria-expanded="false">
+                {{ faq.question }}
+            </button>
+        {% else %}
+            <!-- Ejemplo por defecto si no se pasa 'faqs' -->
+            <button type="button" class="faq-btn" data-target="answer-0" aria-controls="answer-0" aria-expanded="false">¿Cómo hago un pedido?</button>
+            <button type="button" class="faq-btn" data-target="answer-1" aria-controls="answer-1" aria-expanded="false">¿Cuáles son los horarios de entrega?</button>
+            <button type="button" class="faq-btn" data-target="answer-2" aria-controls="answer-2" aria-expanded="false">¿Los productos de abarrotes tienen fecha de caducidad vigente?</button>
+            <button type="button" class="faq-btn" data-target="answer-3" aria-controls="answer-3" aria-expanded="false">¿Cómo garantizan la frescura de la carne?</button>
+            <button type="button" class="faq-btn" data-target="answer-4" aria-controls="answer-4" aria-expanded="false">¿Cuál es el costo del envío?</button>
+            <button type="button" class="faq-btn" data-target="answer-5" aria-controls="answer-5" aria-expanded="false">¿Qué pasa si no estoy en casa para recibir mi pedido?</button>
+            <button type="button" class="faq-btn" data-target="answer-6" aria-controls="answer-6" aria-expanded="false">¿Aceptan pagos contra entrega?</button>
+            <button type="button" class="faq-btn" data-target="answer-7" aria-controls="answer-7" aria-expanded="false">¿Puedo programar una entrega para una fecha futura?</button>
+            <button type="button" class="faq-btn" data-target="answer-8" aria-controls="answer-8" aria-expanded="false">¿Qué hago si un producto llega en mal estado?</button>
+        {% endfor %}
+    </div>
+
+    <div class="faq-detail" aria-live="polite">
+        {% for faq in faqs %}
+            <div id="answer-{{ loop.index0 }}" class="answer" role="tabpanel" aria-hidden="true">
+                {{ faq.answer|safe }}
+            </div>
+        {% endfor %}
+        {% if not faqs %}
+            <div id="answer-0" class="answer" role="tabpanel" aria-hidden="true">
+                Para realizar un pedido, seleccione los productos de nuestra lista, agreguelos con el boton agregar al carrito y proceda al pago desde el carrito.
+            </div>
+            <div id="answer-1" class="answer" role="tabpanel" aria-hidden="true">
+                Las entregas se realizan de lunes a sábado de 9:00 a 20:00.
+            </div>
+            <div id="answer-2" class="answer" role="tabpanel" aria-hidden="true">
+                Contamos con un estricto control de inventarios (PEPS) para asegurar que recibas productos con una vida útil óptima.
+            </div>
+            <div id="answer-3" class="answer" role="tabpanel" aria-hidden="true">
+                Nuestros cortes se seleccionan diariamente y se mantienen en cámaras de refrigeración con temperatura controlada. Además, utilizamos empaques de grado alimenticio para evitar la oxidación.
+            </div>
+            <div id="answer-4" class="answer" role="tabpanel" aria-hidden="true">
+                El costo del envío varía según la ubicación, generalmente entre $5 y $15.
+            </div>
+            <div id="answer-5" class="answer" role="tabpanel" aria-hidden="true">
+                Al ser productos perecederos, recomendamos estar presentes. Si no es posible, el repartidor esperará 10 minutos o intentaremos contactarte para reprogramar (aplica cargo de re-envío).
+            </div>
+            <div id="answer-6" class="answer" role="tabpanel" aria-hidden="true">
+                Si, aceptamos efectivo y terminal bancaria al momento de la entrega, además de pagos con tarjeta y transferencia desde el sitio web.
+            </div>
+            <div id="answer-7" class="answer" role="tabpanel" aria-hidden="true">
+                Sí, puede programar su entrega para una fecha futura durante el proceso de pago.
+            </div>
+            <div id="answer-8" class="answer" role="tabpanel" aria-hidden="true">
+                Tu satisfacción es nuestra prioridad. Si algún producto (especialmente carnes) no cumple con tus expectativas, repórtalo en las primeras 4 horas tras la entrega para realizar el cambio sin costo.
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    (function(){
+        const buttons = Array.from(document.querySelectorAll('.faq-btn'));
+        const answers = Array.from(document.querySelectorAll('.answer'));
+        if(!buttons.length || !answers.length) return;
+
+        function clearActive(){
+            buttons.forEach(b=>{ b.classList.remove('active'); b.setAttribute('aria-expanded','false'); });
+            answers.forEach(a=>{ a.classList.remove('active'); a.setAttribute('aria-hidden','true'); });
+        }
+
+        buttons.forEach((btn, idx)=>{
+            btn.addEventListener('click', ()=> {
+                const targetId = btn.dataset.target;
+                const target = document.getElementById(targetId);
+                if(!target) return;
+                clearActive();
+                btn.classList.add('active');
+                btn.setAttribute('aria-expanded','true');
+                target.classList.add('active');
+                target.setAttribute('aria-hidden','false');
+                target.focus && target.focus();
+            });
+            // allow keyboard activation with Enter/Space
+            btn.addEventListener('keydown', (e)=>{
+                if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); btn.click(); }
+            });
+        });
+
+        // opcional: activar la primera pregunta al cargar
+        buttons[0].click();
+    })();
+</script>
+{% endblock %}
